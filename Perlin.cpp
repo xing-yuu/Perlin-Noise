@@ -271,28 +271,82 @@ void Perlin::smoothEdge(vector<vector<int>>* oriNoise,int iteration) {
         }
     }
 }
-vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type) {
+vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool edgeOptimization) {
+    vector<int> seedColumns;
+    int nowSeed = columns;
+    for (int i = 0; i < columns / 30.0*3.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 3.0; i < columns / 30.0 * 4.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 4.0; i < columns / 30.0 * 7.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 7.0; i < columns / 30.0 * 8.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 8.0; i < columns / 30.0 * 11.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 11.0; i < columns / 30.0 * 12.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 12.0; i < columns / 30.0 * 14.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 14.0; i < columns / 30.0 * 17.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 17.0; i < columns / 30.0 * 18.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 18.0; i < columns / 30.0 * 21.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 21.0; i < columns / 30.0 * 22.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 22.0; i < columns / 30.0 * 24.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 24.0; i < columns / 30.0 * 25.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    for (int i = columns / 30.0 * 25.0; i < columns / 30.0 * 27.0; i++) {
+        seedColumns.push_back(nowSeed--);
+    }
+    for (int i = columns / 30.0 * 27.0; i < columns / 30.0 * 28.0; i++) {
+        seedColumns.push_back(nowSeed++);
+    }
+    int lastPoint = columns - seedColumns.size();
+    float delta = (seedColumns.at(0) - seedColumns.at(seedColumns.size() - 1)) * 1.0 / lastPoint;
+    for (int i = 0; i < lastPoint; i++) {
+        seedColumns.push_back(seedColumns.at(seedColumns.size() - 1) + delta);
+    }
     for (int i = 0; i < row; i++) {
         vector<int> everyRowPixel;
         for (int j = 0; j < columns; j++) {
-            
-            float g = u1.eval(Vec20f(0.03 * (j), i * 0.03)) * 10;
+            int nowi = i, nowj = j;
+            if (edgeOptimization) {
+                nowj = seedColumns.at((j + columns / 4) % columns);
+            }
+            float g = u1.eval(Vec20f(0.03 * (nowj), nowi * 0.03)) * 10;
             float d;
             if(type==0){//木纹
                 d = g - int(g);
             }
             else if (type == 1) {//perlin noise 原图
-                d = (PerlinNoise(0.05 * (j), i * 0.05)+1.0)/2.0;
+                d = (PerlinNoise(0.05 * (nowj), nowi * 0.05)+1.0)/2.0;
             }
             else if (type == 2) {//大理石纹理
-                float noiseValue = u1.fractalNoise(Vec20f(0.5 * (j), 0.5 * i));
+                float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
                 // we "displace" the value i used in the sin() expression by noiseValue * 100
-                float d = (sin((j + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
+                float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
             }
             everyRowPixel.push_back(int(d * 255));
         }
         result->push_back(everyRowPixel);
     }
-    smoothEdge(result,3);
     return result;
 }

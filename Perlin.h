@@ -140,7 +140,7 @@ public:
 
     float getLength(point2D vStart, point2D vEnd);
     void smoothEdge(vector<vector<int>>* oriNoise, int iteration);
-    vector<vector<int>>* getPerlinNoise(int row, int columns, int type = 0);
+    vector<vector<int>>* getPerlinNoise(int row, int columns, int type = 0, bool edgeOptimization = true);
 
 
 
