@@ -139,7 +139,7 @@ public:
     float max(float v1, float v2) { return v1 > v2 ? v1 : v2; }
 
     float getLength(point2D vStart, point2D vEnd);
-
+    void smoothEdge(vector<vector<int>>* oriNoise, int iteration);
     vector<vector<int>>* getPerlinNoise(int row, int columns, int type = 0);
 
 

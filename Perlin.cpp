@@ -129,13 +129,154 @@ float Perlin::getLength(point2D vStart, point2D vEnd)
 {
     return sqrt((vEnd.x - vStart.x) * (vEnd.x - vStart.x) + (vEnd.y - vStart.y) * (vEnd.y - vStart.y));
 }
-
+void Perlin::smoothEdge(vector<vector<int>>* oriNoise,int iteration) {
+    int smoothSize = oriNoise->size() * 0.05;
+    for (int iterationID = 0; iterationID < iteration; iterationID++) {
+        vector<vector<int>> tempNoise;
+        for (int i = 0; i < oriNoise->size(); i++) {
+            vector<int> tempRow;
+            for (int j = oriNoise->at(i).size() - smoothSize; j < oriNoise->at(i).size(); j++) {
+                int rfficientPoint = 1;
+                int nowGrew = oriNoise->at(i).at(j);
+                if (i - 1 >= 0) {
+                    if (j - 1 >= 0) {
+                        nowGrew += oriNoise->at(i - 1).at(j - 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i - 1).at(oriNoise->at(i - 1).size() - 1);
+                        rfficientPoint++;
+                    }
+                    if (j + 1 < oriNoise->at(i).size()) {
+                        nowGrew += oriNoise->at(i - 1).at(j + 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i - 1).at(0);
+                        rfficientPoint++;
+                    }
+                    nowGrew += oriNoise->at(i - 1).at(j);
+                    rfficientPoint++;
+                }
+                if (i + 1 < oriNoise->size()) {
+                    if (j - 1 >= 0) {
+                        nowGrew += oriNoise->at(i + 1).at(j - 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i + 1).at(oriNoise->at(i + 1).size() - 1);
+                        rfficientPoint++;
+                    }
+                    if (j + 1 < oriNoise->at(i + 1).size()) {
+                        nowGrew += oriNoise->at(i + 1).at(j + 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i + 1).at(0);
+                        rfficientPoint++;
+                    }
+                    nowGrew += oriNoise->at(i + 1).at(j);
+                    rfficientPoint++;
+                }
+                if (j - 1 >= 0) {
+                    nowGrew += oriNoise->at(i).at(j - 1);
+                    rfficientPoint++;
+                }
+                else {
+                    nowGrew += oriNoise->at(i).at(oriNoise->at(i).size() - 1);
+                    rfficientPoint++;
+                }
+                if (j + 1 < oriNoise->at(i).size()) {
+                    nowGrew += oriNoise->at(i).at(j + 1);
+                    rfficientPoint++;
+                }
+                else {
+                    nowGrew += oriNoise->at(i).at(0);
+                    rfficientPoint++;
+                }
+                nowGrew /= rfficientPoint;
+                tempRow.push_back(nowGrew);
+            }
+            for (int j = 0; j < smoothSize; j++) {
+                int rfficientPoint = 1;
+                int nowGrew = oriNoise->at(i).at(j);
+                if (i - 1 >= 0) {
+                    if (j - 1 >= 0) {
+                        nowGrew += oriNoise->at(i - 1).at(j - 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i - 1).at(oriNoise->at(i - 1).size() - 1);
+                        rfficientPoint++;
+                    }
+                    if (j + 1 < oriNoise->at(i).size()) {
+                        nowGrew += oriNoise->at(i - 1).at(j + 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i - 1).at(0);
+                        rfficientPoint++;
+                    }
+                    nowGrew += oriNoise->at(i - 1).at(j);
+                    rfficientPoint++;
+                }
+                if (i + 1 < oriNoise->size()) {
+                    if (j - 1 >= 0) {
+                        nowGrew += oriNoise->at(i + 1).at(j - 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i + 1).at(oriNoise->at(i + 1).size() - 1);
+                        rfficientPoint++;
+                    }
+                    if (j + 1 < oriNoise->at(i + 1).size()) {
+                        nowGrew += oriNoise->at(i + 1).at(j + 1);
+                        rfficientPoint++;
+                    }
+                    else {
+                        nowGrew += oriNoise->at(i + 1).at(0);
+                        rfficientPoint++;
+                    }
+                    nowGrew += oriNoise->at(i + 1).at(j);
+                    rfficientPoint++;
+                }
+                if (j - 1 >= 0) {
+                    nowGrew += oriNoise->at(i).at(j - 1);
+                    rfficientPoint++;
+                }
+                else {
+                    nowGrew += oriNoise->at(i).at(oriNoise->at(i).size() - 1);
+                    rfficientPoint++;
+                }
+                if (j + 1 < oriNoise->at(i).size()) {
+                    nowGrew += oriNoise->at(i).at(j + 1);
+                    rfficientPoint++;
+                }
+                else {
+                    nowGrew += oriNoise->at(i).at(0);
+                    rfficientPoint++;
+                }
+                nowGrew /= rfficientPoint;
+                tempRow.push_back(nowGrew);
+            }
+            tempNoise.push_back(tempRow);
+        }
+        for (int i = 0; i < oriNoise->size(); i++) {
+            for (int j = oriNoise->at(i).size() - smoothSize; j < oriNoise->size(); j++) {
+                oriNoise->at(i).at(j) = tempNoise.at(i).at(j - (oriNoise->at(i).size() - smoothSize));
+            }
+            for (int j = 0; j < smoothSize; j++) {
+                oriNoise->at(i).at(j) = tempNoise.at(i).at(j + smoothSize);
+            }
+        }
+    }
+}
 vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type) {
     for (int i = 0; i < row; i++) {
         vector<int> everyRowPixel;
         for (int j = 0; j < columns; j++) {
             
-            float g = u1.eval(Vec20f(0.05 * (j), i * 0.05)) * 10;
+            float g = u1.eval(Vec20f(0.03 * (j), i * 0.03)) * 10;
             float d;
             if(type==0){//Ä¾ÎÆ
                 d = g - int(g);
@@ -152,5 +293,6 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type) {
         }
         result->push_back(everyRowPixel);
     }
+    smoothEdge(result,3);
     return result;
 }
