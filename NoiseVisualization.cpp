@@ -10,6 +10,6 @@ NoiseVisualization::NoiseVisualization(vector<vector<int>>* img , string outputP
         }
     }
     imshow("pic", mat);
-    imwrite("result.png", mat);
+    imwrite("result1.png", mat);
     waitKey(0);
 }

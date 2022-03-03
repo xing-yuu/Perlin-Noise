@@ -3,4 +3,8 @@
   
   Texture 1:Wood texture
   
-![Image text](result.png)
+![Image text](Wood.png)
+
+  Texture 2:Cloud 
+  
+![Image text](Cloud.png)

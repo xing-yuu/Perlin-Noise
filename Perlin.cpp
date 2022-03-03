@@ -58,14 +58,13 @@ double Perlin::PerlinNoise(float x, float y)    // 最终调用：根据(x,y)获得其对应
 {
     double total = 0;
     double p = 0.5;
-    int n = 2;//决定叠加的频率和幅度
+    int n =4;//决定叠加的频率和幅度
     for (int i = 0; i < n; i++)
     {
         double frequency = pow(2, i);
         double amplitude = pow(p, i);
         total = total + InterpolatedNoise(x * frequency, y * frequency) * amplitude;
     }
-    if (total < 0.15 && total>-0.15) return 0;
     return total;
 }
 
@@ -142,12 +141,12 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type) {
                 d = g - int(g);
             }
             else if (type == 1) {//perlin noise 原图
-                d = fabs(PerlinNoise(0.15 * (j), i * 0.15));
+                d = (PerlinNoise(0.05 * (j), i * 0.05)+1.0)/2.0;
             }
             else if (type == 2) {//大理石纹理
                 float noiseValue = u1.fractalNoise(Vec20f(0.5 * (j), 0.5 * i));
                 // we "displace" the value i used in the sin() expression by noiseValue * 100
-                float d = (sin((0.15 * (j) + noiseValue * 100) * 2 / 200.f) + 1) / 2.f;
+                float d = (sin((j + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
             }
             everyRowPixel.push_back(int(d * 255));
         }
