@@ -1,4 +1,6 @@
 # Perlin Noise
   A little demo of generating Perlin noise.
-  Wood texture
+  
+  Texture 1:Wood texture
+  
 ![Image text](result.png)
