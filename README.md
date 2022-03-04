@@ -1,10 +1,15 @@
 # Perlin Noise
   A little demo of generating Perlin noise.
   
-  Texture 1:Wood texture
+##  Texture 
+### Wood texture
   
 ![Image text](Wood.png)
 
-  Texture 2:Cloud 
+### Cloud 
   
 ![Image text](Cloud.png)
+
+## Reference
+https://www.cnblogs.com/Memo/archive/2008/09/08/1286963.html
+https://www.cnblogs.com/Memo/archive/2008/09/08/1286963.html

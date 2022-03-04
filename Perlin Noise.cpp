@@ -14,7 +14,7 @@ int main() {
 	* k:纹理类型：0，1,2
 	* l:是否使用全局优化
 	*/
-	vector<vector<int>>* grayScale = perlinNoise->getPerlinNoise(360, 360, 0, true);
+	vector<vector<int>>* grayScale = perlinNoise->getPerlinNoise(360, 360, 1, false);
 	//柏林噪声显示
 	NoiseVisualization* noiseVisualization = new NoiseVisualization(grayScale,"./");
 

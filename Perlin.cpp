@@ -340,9 +340,10 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool
                 d = (PerlinNoise(0.05 * (nowj), nowi * 0.05)+1.0)/2.0;
             }
             else if (type == 2) {//大理石纹理
-                float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
+                //float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
                 // we "displace" the value i used in the sin() expression by noiseValue * 100
-                float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
+                //float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
+                d = perlin(nowj * 0.01, nowi * 0.01);
             }
             everyRowPixel.push_back(int(d * 255));
         }
