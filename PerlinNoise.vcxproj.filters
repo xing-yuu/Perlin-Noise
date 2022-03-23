@@ -21,6 +21,12 @@
     <ClInclude Include="NoiseVisualization.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PerlinNoise4D.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="SimplexNoise.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Perlin.cpp">
@@ -30,6 +36,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="NoiseVisualization.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PerlinNoise4D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="SimplexNoise.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

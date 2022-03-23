@@ -1,6 +1,6 @@
 #include "NoiseVisualization.h"
 NoiseVisualization::NoiseVisualization(vector<vector<int>>* img , string outputPath) {
-    Mat mat (img->at(0).size(), img->size(), CV_8UC1);
+    Mat mat (img->size(),img->at(0).size(),  CV_8UC1);
 //	mat = new cv::Mat(img->at(0).size(), img->size(), CV_8UC1);
     for (int i = 0; i < mat.rows; i++)
     {

@@ -145,11 +145,15 @@
   <ItemGroup>
     <ClInclude Include="NoiseVisualization.h" />
     <ClInclude Include="Perlin.h" />
+    <ClInclude Include="PerlinNoise4D.h" />
+    <ClInclude Include="SimplexNoise.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NoiseVisualization.cpp" />
     <ClCompile Include="Perlin Noise.cpp" />
     <ClCompile Include="Perlin.cpp" />
+    <ClCompile Include="PerlinNoise4D.cpp" />
+    <ClCompile Include="SimplexNoise.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

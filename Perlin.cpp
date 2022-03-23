@@ -4,6 +4,8 @@ using namespace std;
 
 Perlin::Perlin()
 {
+    perlinNoise4D.generateLookupTables();
+    srand((unsigned)time(NULL));
     result = new vector<vector<int>>;
     for (int i = 0; i <= 256; i++) {
         for (int j = 0; j < 256; j++) {
@@ -11,6 +13,7 @@ Perlin::Perlin()
             Gradient[i][j][1] = rand() % 256;
         }
     }
+
 }
 
 
@@ -129,6 +132,21 @@ float Perlin::getLength(point2D vStart, point2D vEnd)
 {
     return sqrt((vEnd.x - vStart.x) * (vEnd.x - vStart.x) + (vEnd.y - vStart.y) * (vEnd.y - vStart.y));
 }
+
+
+float Perlin::TileablePerlin(float x, float y) {
+    double c = 0, a = 1; // torus parameters (controlling size)
+    double xt = (c + a * cos(2 * PI * y)) * cos(2 * PI * x);
+    double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);
+    double zt = a * sin(2 * PI * y);
+    double val = SimplexNoise::noise(xt, yt, zt);
+  //  cout << val << endl;
+    return val;
+ //   double val = PerlinNoise3D(xt, yt, zt, 1.5, 2, 12); // torus
+}
+
+
+
 void Perlin::smoothEdge(vector<vector<int>>* oriNoise,int iteration) {
     int smoothSize = oriNoise->size() * 0.05;
     for (int iterationID = 0; iterationID < iteration; iterationID++) {
@@ -273,57 +291,9 @@ void Perlin::smoothEdge(vector<vector<int>>* oriNoise,int iteration) {
 }
 vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool edgeOptimization) {
     vector<int> seedColumns;
-    int nowSeed = columns;
-    for (int i = 0; i < columns / 30.0*3.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 3.0; i < columns / 30.0 * 4.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 4.0; i < columns / 30.0 * 7.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 7.0; i < columns / 30.0 * 8.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 8.0; i < columns / 30.0 * 11.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 11.0; i < columns / 30.0 * 12.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 12.0; i < columns / 30.0 * 14.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 14.0; i < columns / 30.0 * 17.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 17.0; i < columns / 30.0 * 18.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 18.0; i < columns / 30.0 * 21.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 21.0; i < columns / 30.0 * 22.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 22.0; i < columns / 30.0 * 24.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 24.0; i < columns / 30.0 * 25.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    for (int i = columns / 30.0 * 25.0; i < columns / 30.0 * 27.0; i++) {
-        seedColumns.push_back(nowSeed--);
-    }
-    for (int i = columns / 30.0 * 27.0; i < columns / 30.0 * 28.0; i++) {
-        seedColumns.push_back(nowSeed++);
-    }
-    int lastPoint = columns - seedColumns.size();
-    float delta = (seedColumns.at(0) - seedColumns.at(seedColumns.size() - 1)) * 1.0 / lastPoint;
-    for (int i = 0; i < lastPoint; i++) {
-        seedColumns.push_back(seedColumns.at(seedColumns.size() - 1) + delta);
-    }
+
+
+
     for (int i = 0; i < row; i++) {
         vector<int> everyRowPixel;
         for (int j = 0; j < columns; j++) {
@@ -331,10 +301,16 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool
             if (edgeOptimization) {
                 nowj = seedColumns.at((j + columns / 4) % columns);
             }
-            float g = u1.eval(Vec20f(0.03 * (nowj), nowi * 0.03)) * 10;
+        //    float g = u1.eval(Vec20f(0.01 * (nowj), nowi * 0.01)) * 10;
+         //   float g = u1.eval4(0.01 * nowj, nowi * 0.01) * 10;
+         //   float g = u1.eval(Vec20f(nowj * 1.0 / columns-0.5, nowi * 1.0 / row-0.5)) * 10;
+
+            float g = u1.eval(nowj * 1.0 / columns, nowi * 1.0 / row ) * 10;
+            
+        //    float g = u1.eval(nowj*1.0/ columns, nowi*1.0/ row) * 10;
             float d;
             if(type==0){//木纹
-                d = g - int(g);
+                d = g -int(g);
             }
             else if (type == 1) {//perlin noise 原图
                 d = (PerlinNoise(0.05 * (nowj), nowi * 0.05)+1.0)/2.0;
@@ -345,9 +321,22 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool
                 //float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
                 d = perlin(nowj * 0.01, nowi * 0.01);
             }
+            else if (type == 3) {//周期纹理
+                //float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
+                // we "displace" the value i used in the sin() expression by noiseValue * 100
+                //float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
+                d = TileablePerlin(nowi * 1.0 / row, nowj * 1.0 / columns);
+                d = (d + 1) / 2;
+            }
+        //    d = perlinNoise4D.SeamlessNoise(0.05 * nowj, nowi * 0.05, 0) + 1;
+            //d /= 2;
+ //           cout << d << endl;
             everyRowPixel.push_back(int(d * 255));
         }
+        cout << endl;
         result->push_back(everyRowPixel);
     }
     return result;
 }
+
+
