@@ -486,3 +486,19 @@ float SimplexNoise::fractal(size_t octaves, float x, float y, float z) const {
 
     return (output / denom);
 }
+
+
+std::vector< std::vector<int>>* SimplexNoise::getNoise(int row, int columns, bool edgeOptimization) {
+    result = new std::vector< std::vector<int>>;
+    for (int i = 0; i < row; i++) {
+        std::vector<int> everyRowPixel;
+        for (int j = 0; j < columns; j++) {
+            int nowi = i, nowj = j;
+            float d, g;
+            d = TileablePerlin(nowi * 1.0 / row, nowj * 1.0 / columns);
+            everyRowPixel.push_back(int(d * 255));
+        }
+        result->push_back(everyRowPixel);
+    }
+    return result;
+}

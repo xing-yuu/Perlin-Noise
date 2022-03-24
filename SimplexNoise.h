@@ -10,7 +10,14 @@
 #pragma once
 
 #include <cstddef>  // size_t
+#include <random>
+#include <functional>
+#include <iostream>
+#include <cmath>
+#include <vector>
 
+#define PI 3.14159265
+//using namespace std;
  /**
   * @brief A Perlin Simplex Noise C++ Implementation (1D, 2D, 3D, 4D).
   */
@@ -27,7 +34,14 @@ public:
     float fractal(size_t octaves, float x) const;
     float fractal(size_t octaves, float x, float y) const;
     float fractal(size_t octaves, float x, float y, float z) const;
-
+    float TileablePerlin(float x, float y) {
+        double c = 2, a = 1; // torus parameters (controlling size)
+        double xt = (c + a * cos(2 * PI * y)) * cos(2 * PI * x);
+        double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);
+        double zt = a * sin(2 * PI * y);
+        double val = noise(xt, yt, zt);
+        return val;
+    }
     /**
      * Constructor of to initialize a fractal noise summation
      *
@@ -45,11 +59,12 @@ public:
         mLacunarity(lacunarity),
         mPersistence(persistence) {
     }
-
+    std::vector< std::vector<int>>* getNoise(int row, int columns, bool edgeOptimization);
 private:
     // Parameters of Fractional Brownian Motion (fBm) : sum of N "octaves" of noise
     float mFrequency;   ///< Frequency ("width") of the first octave of noise (default to 1.0)
     float mAmplitude;   ///< Amplitude ("height") of the first octave of noise (default to 1.0)
     float mLacunarity;  ///< Lacunarity specifies the frequency multiplier between successive octaves (default to 2.0).
     float mPersistence; ///< Persistence is the loss of amplitude between successive octaves (usually 1/lacunarity)
+    std::vector< std::vector<int>>* result;
 };

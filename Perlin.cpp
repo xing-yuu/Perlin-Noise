@@ -4,16 +4,10 @@ using namespace std;
 
 Perlin::Perlin()
 {
-    perlinNoise4D.generateLookupTables();
     srand((unsigned)time(NULL));
+    nowSeed = rand();
     result = new vector<vector<int>>;
-    for (int i = 0; i <= 256; i++) {
-        for (int j = 0; j < 256; j++) {
-            Gradient[i][j][0] = rand() % 256;
-            Gradient[i][j][1] = rand() % 256;
-        }
-    }
-
+   
 }
 
 
@@ -27,12 +21,25 @@ double Perlin::Noise(int x, int y)    // ÕûÒ»¸öËæ»úÊý£¬Ïàµ±ÓÚÎ±Ëæ»ú£¬ÒòÎªÔËËã·¨Ô
     n = (n << 13) ^ n;
     return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
 }
+double Perlin::Noise(int x, int y,int z)    // ÕûÒ»¸öËæ»úÊý£¬Ïàµ±ÓÚÎ±Ëæ»ú£¬ÒòÎªÔËËã·¨Ôò¶¼ÊÇ¹Ì¶¨µÄ
+{
+    int n = x + y * 57 + z * nowSeed;
+    n = (n << 13) ^ n;
+    return (1.0 - ((n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+}
 
 double Perlin::SmoothedNoise(int x, int y)   //¹â»¬ÔëÉù
 {
     double corners = (Noise(x - 1, y - 1) + Noise(x + 1, y - 1) + Noise(x - 1, y + 1) + Noise(x + 1, y + 1)) / 16;
     double sides = (Noise(x - 1, y) + Noise(x + 1, y) + Noise(x, y - 1) + Noise(x, y + 1)) / 8;
     double center = Noise(x, y) / 4;
+    return corners + sides + center;
+}
+double Perlin::SmoothedNoise(int x, int y, int z)   //¹â»¬ÔëÉù
+{
+    double corners = (Noise(x - 1, y - 1, z - 1) + Noise(x - 1, y - 1, z + 1) + Noise(x - 1, y + 1, z - 1) + Noise(x - 1, y + 1, z + 1) + Noise(x + 1, y - 1, z - 1) + Noise(x + 1, y - 1, z + 1) + Noise(x + 1, y + 1, z - 1) + Noise(x + 1, y + 1, z + 1)) / 32;
+    double sides = (Noise(x - 1, y, z) + Noise(x + 1, y, z) + Noise(x, y - 1, z) + Noise(x, y + 1, z) + Noise(x, y, z + 1) + Noise(x, y, z - 1)) / 16;
+    double center = Noise(x, y, z) / 8;
     return corners + sides + center;
 }
 double Perlin::Cosine_Interpolate(double a, double b, double x)  // ÓàÏÒ²åÖµ
@@ -57,6 +64,39 @@ double Perlin::InterpolatedNoise(float x, float y)   // »ñÈ¡²åÖµÔëÉù
     return Cosine_Interpolate(i1, i2, fractional_Y);
 }
 
+double Perlin::InterpolatedNoise(float x, float y, float z)   // »ñÈ¡ÈýÎ¬²åÖµÔëÉù
+{
+    int integer_X = floor(x);
+    float  fractional_X = x - integer_X;
+    int integer_Y = floor(y);
+    float fractional_Y = y - integer_Y;
+    int integer_Z = floor(z);
+    float  fractional_Z = z - integer_Z;
+
+
+
+    double c000 = SmoothedNoise(integer_X, integer_Y, integer_Z);
+    double c001 = SmoothedNoise(integer_X, integer_Y, integer_Z + 1);
+    double c010 = SmoothedNoise(integer_X, integer_Y + 1, integer_Z);
+    double c011 = SmoothedNoise(integer_X, integer_Y + 1, integer_Z + 1);
+    double c100 = SmoothedNoise(integer_X + 1, integer_Y, integer_Z);
+    double c101 = SmoothedNoise(integer_X + 1, integer_Y, integer_Z + 1);
+    double c110 = SmoothedNoise(integer_X + 1, integer_Y + 1, integer_Z);
+    double c111 = SmoothedNoise(integer_X + 1, integer_Y + 1, integer_Z + 1);
+
+    double nx00 = Cosine_Interpolate(c000, c001, fractional_Z);
+    double nx01 = Cosine_Interpolate(c010, c011, fractional_Z);
+    double nx10 = Cosine_Interpolate(c100, c101, fractional_Z);
+    double nx11 = Cosine_Interpolate(c110, c111, fractional_Z);
+
+    double nx0 = Cosine_Interpolate(nx00, nx01, fractional_Y);
+    double nx1 = Cosine_Interpolate(nx10, nx11, fractional_Y);
+
+    return Cosine_Interpolate(nx0, nx1, fractional_X);
+
+}
+
+
 double Perlin::PerlinNoise(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦µÄPerlinNoiseÖµ
 {
     double total = 0;
@@ -71,62 +111,24 @@ double Perlin::PerlinNoise(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦
     return total;
 }
 
-
-
-
-
-
-float Perlin::lerp(float a0, float a1, float w)
+double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦µÄPerlinNoiseÖµ
 {
-    return (1.0f - w) * a0 + w * a1;
+    double c = 4, a = 2; // torus parameters (controlling size)
+    double xt = (c + a * cos(2 * PI * y)) * cos(2 * PI * x);// +0.5;
+    double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);// +1;// +101.5;
+    double zt = a * sin(2 * PI * y);// +101.5;
+
+    double total = 0;
+    double p = 0.5;
+    int n = 4;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
+    for (int i = 0; i < n; i++)
+    {
+        double frequency = pow(2, i);
+        double amplitude = pow(p, i);
+        total = total + InterpolatedNoise(xt * frequency, yt * frequency, zt * frequency) * amplitude;
+    }
+    return total;
 }
-
-float Perlin::dotGridGradient(int ix, int iy, float x, float y)
-{
-    float dx = x - (float)ix;
-    float dy = y - (float)iy;
-
-    // Compute the dot-product
-    // return dx;
-    return (dx * Gradient[iy][ix][0] + dy * Gradient[iy][ix][1]);
-}
-
-float Perlin::perlin(float x, float y)
-{
-    // Determine grid cell coordinates
-    if (x < 0) x = -x;
-    if (y < 0) y = -y;
-    while (x > 255) x -= 255;
-
-    while (y > 255) y -= 255;
-    int x0 = (int)x;
-    int x1 = x0 + 1;
-    int y0 = (int)y;
-    int y1 = y0 + 1;
-
-    // Determine interpolation weights
-    // Could also use higher order polynomial/s-curve here
-    float sx = x - (float)x0;
-    float sy = y - (float)y0;
-
-    // Interpolate between grid point gradients
-    float n0, n1, ix0, ix1, value;
-
-    n0 = dotGridGradient(x0, y0, x, y);
-    n1 = dotGridGradient(x1, y0, x, y);
-    ix0 = lerp(n0, n1, sx);
-
-    n0 = dotGridGradient(x0, y1, x, y);
-    n1 = dotGridGradient(x1, y1, x, y);
-    ix1 = lerp(n0, n1, sx);
-
-    value = lerp(ix0, ix1, sy);
-    int value2 = ceil(value);
-    value -= value2;
-    if (value < 0) return -value;
-    return value;
-}
-
 
 float Perlin::getLength(point2D vStart, point2D vEnd)
 {
@@ -134,16 +136,7 @@ float Perlin::getLength(point2D vStart, point2D vEnd)
 }
 
 
-float Perlin::TileablePerlin(float x, float y) {
-    double c = 0, a = 1; // torus parameters (controlling size)
-    double xt = (c + a * cos(2 * PI * y)) * cos(2 * PI * x);
-    double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);
-    double zt = a * sin(2 * PI * y);
-    double val = SimplexNoise::noise(xt, yt, zt);
-  //  cout << val << endl;
-    return val;
- //   double val = PerlinNoise3D(xt, yt, zt, 1.5, 2, 12); // torus
-}
+
 
 
 
@@ -289,8 +282,7 @@ void Perlin::smoothEdge(vector<vector<int>>* oriNoise,int iteration) {
         }
     }
 }
-vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool edgeOptimization) {
-    vector<int> seedColumns;
+vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, bool edgeOptimization) {
 
 
 
@@ -298,42 +290,31 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int type, bool
         vector<int> everyRowPixel;
         for (int j = 0; j < columns; j++) {
             int nowi = i, nowj = j;
-            if (edgeOptimization) {
-                nowj = seedColumns.at((j + columns / 4) % columns);
-            }
-        //    float g = u1.eval(Vec20f(0.01 * (nowj), nowi * 0.01)) * 10;
-         //   float g = u1.eval4(0.01 * nowj, nowi * 0.01) * 10;
-         //   float g = u1.eval(Vec20f(nowj * 1.0 / columns-0.5, nowi * 1.0 / row-0.5)) * 10;
+            float d, g;
 
-            float g = u1.eval(nowj * 1.0 / columns, nowi * 1.0 / row ) * 10;
-            
-        //    float g = u1.eval(nowj*1.0/ columns, nowi*1.0/ row) * 10;
-            float d;
-            if(type==0){//Ä¾ÎÆ
-                d = g -int(g);
+            if (edgeOptimization) {
+                d = (PerlinNoiseT(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
             }
-            else if (type == 1) {//perlin noise Ô­Í¼
-                d = (PerlinNoise(0.05 * (nowj), nowi * 0.05)+1.0)/2.0;
+            else {
+                d = (PerlinNoise(0.05 * (nowj), nowi * 0.05) + 1.0) / 2.0;
             }
-            else if (type == 2) {//´óÀíÊ¯ÎÆÀí
-                //float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
-                // we "displace" the value i used in the sin() expression by noiseValue * 100
-                //float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
-                d = perlin(nowj * 0.01, nowi * 0.01);
-            }
+            /*
+
+
+
+            else 
             else if (type == 3) {//ÖÜÆÚÎÆÀí
                 //float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
                 // we "displace" the value i used in the sin() expression by noiseValue * 100
                 //float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
-                d = TileablePerlin(nowi * 1.0 / row, nowj * 1.0 / columns);
+               
                 d = (d + 1) / 2;
-            }
+            }*/
         //    d = perlinNoise4D.SeamlessNoise(0.05 * nowj, nowi * 0.05, 0) + 1;
             //d /= 2;
  //           cout << d << endl;
             everyRowPixel.push_back(int(d * 255));
         }
-        cout << endl;
         result->push_back(everyRowPixel);
     }
     return result;
