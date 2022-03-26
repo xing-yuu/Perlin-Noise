@@ -101,15 +101,14 @@ double Perlin::PerlinNoise(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦
 {
     double total = 0;
     double p = 0.5;
-    int n = 2;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
+    int n = 4;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
     for (int i = 0; i < n; i++)
     {
         double frequency = pow(2, i);
         double amplitude = pow(p, i);
         total = total + InterpolatedNoise(x * frequency, y * frequency) * amplitude;
     }
-    if (total < 0.15 && total>-0.15) return 0;
-    return fabs(total);
+    return total;
 }
 
 double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦µÄPerlinNoiseÖµ
@@ -118,9 +117,6 @@ double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ
     double xt = (c + a * cos(2 * PI * y)) * cos(2 * PI * x);// +0.5;
     double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);// +1;// +101.5;
     double zt = a * sin(2 * PI * y);// +101.5;
-
-
-
 
     double total = 0;
     double p = 0.5;
@@ -152,14 +148,6 @@ double Perlin::PerlinNoiseS(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ
         double amplitude = pow(p, i);
         total = total + InterpolatedNoise(xt * frequency, yt * frequency, zt * frequency) * amplitude;
     }
-    total += 1;
-    total /= 2;
-    if (total < 0.2) return 0;
-    if (total > 0.7) return 1;
-    total -= 0.2;
-    total /= 0.5;
- //   return min(fabs(total), 1.0);
- //   cout << total << endl;
     return total;
 }
 
@@ -327,30 +315,16 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int edgeOptimi
             int nowi = i, nowj = j;
             float d, g;
 
-            if (edgeOptimization==2) {
+            if (edgeOptimization == 2) {
                 d = (PerlinNoiseT(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
             }
             else if (edgeOptimization == 1) {
-                d = (PerlinNoiseS(1.0 * (nowj) / columns, nowi * 1.0 / row));// +1.0) / 2.0;
+                d = (PerlinNoiseS(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
             }
             else {
-                d = PerlinNoise(0.15 * (nowj), nowi * 0.15);
+                d = (PerlinNoise(0.05 * (nowj), nowi * 0.05) + 1.0) / 2.0;
             }
-            /*
-
-
-
-            else 
-            else if (type == 3) {//ÖÜÆÚÎÆÀí
-                //float noiseValue = u1.fractalNoise(Vec20f(0.5 * (nowj), 0.5 * nowi));
-                // we "displace" the value i used in the sin() expression by noiseValue * 100
-                //float d = (sin((nowj + noiseValue * 100) * 2  / 200.f) + 1) / 2.f;
-               
-                d = (d + 1) / 2;
-            }*/
-        //    d = perlinNoise4D.SeamlessNoise(0.05 * nowj, nowi * 0.05, 0) + 1;
-            //d /= 2;
- //           cout << d << endl;
+            
             everyRowPixel.push_back(int(d * 255));
         }
         result->push_back(everyRowPixel);
