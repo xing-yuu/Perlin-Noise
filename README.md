@@ -1,7 +1,9 @@
 # Random Noise
 ## Introduction 
   A little demo of generating Random Noise.
+
   Include Perlin & SimpleX & Value noise.
+  
   Can generate Tileable Noise.
   
 ## Directions 
@@ -12,6 +14,8 @@
       * 0:No optimization.
       * 1:Single direction optimization.
       * 2:Double direction optimization.
+#### Libiary
+OpenCV 3.0.0
 
 ##  Demo 
 ### Value noise (Wood texture)
