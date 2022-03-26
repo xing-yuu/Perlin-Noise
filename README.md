@@ -16,38 +16,47 @@
 ##  Demo 
 ### Value noise (Wood texture)
 * Original noise  
-![Image text](./IMG/11.png)
+![Value noise](./IMG/11.png)
 * Single Tileable noise  
-![Image text](./IMG/12.png)
-![Image text](./IMG/122.png)
+![Value noise](./IMG/12.png)
+![Value noise](./IMG/122.png)
 * Double Tileable noise  
-![Image text](./IMG/13.png)
-![Image text](./IMG/132.png)
+![Value noise](./IMG/13.png)
+![Value noise](./IMG/132.png)
 
 ### Perlin noise (Cloud texture)
 * Original noise  
-![Image text](./IMG/21.png)
+![Perlin noise](./IMG/21.png)
 * Single Tileable noise  
-![Image text](./IMG/22.png)
-![Image text](./IMG/222.png)
+![Perlin noise](./IMG/22.png)
+![Perlin noise](./IMG/222.png)
 * Double Tileable noise  
-![Image text](./IMG/23.png)
-![Image text](./IMG/232.png)
+![Perlin noise](./IMG/23.png)
+![Perlin noise](./IMG/232.png)
 
 ### SimpleX noise
 * Original noise  
-![Image text](./IMG/31.png)
+![SimpleX noise](./IMG/31.png)
 * Single Tileable noise  
-![Image text](./IMG/32.png)
-![Image text](./IMG/322.png)
+![SimpleX noise](./IMG/32.png)
+![SimpleX noise](./IMG/322.png)
 * Double Tileable noise  
-![Image text](./IMG/33.png)
-![Image text](./IMG/332.png)
+![SimpleX noise](./IMG/33.png)
+![SimpleX noise](./IMG/332.png)
 
 ## Reference
-https://www.cnblogs.com/Memo/archive/2008/09/08/1286963.html
-https://www.cnblogs.com/Memo/archive/2008/09/08/1286963.html
-https://weber.itn.liu.se/~stegu/TNM022-2005/perlinnoiselinks/
-https://mzucker.github.io/html/perlin-noise-math-faq.html
-https://gamedev.stackexchange.com/questions/23625/how-do-you-generate-tileable-perlin-noise
-https://blog.csdn.net/qq_14914623/article/details/90345392
+#### Value Noise:
+* https://blog.csdn.net/yolon3000/article/details/78473705
+* https://blog.csdn.net/yolon3000/article/details/78483618
+
+#### Perlin Noise:
+* https://blog.csdn.net/qq_34302921/article/details/80849139
+* https://cloud.tencent.com/developer/article/1005578
+* https://zhuanlan.zhihu.com/p/206271895
+* https://www.cnblogs.com/Memo/archive/2008/09/08/1286963.html
+
+#### Tileable noise:
+* https://weber.itn.liu.se/~stegu/TNM022-2005/perlinnoiselinks/
+* https://mzucker.github.io/html/perlin-noise-math-faq.html
+* https://gamedev.stackexchange.com/questions/23625/how-do-you-generate-tileable-perlin-noise
+* https://blog.csdn.net/qq_14914623/article/details/90345392

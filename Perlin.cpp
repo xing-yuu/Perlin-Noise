@@ -101,14 +101,15 @@ double Perlin::PerlinNoise(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦
 {
     double total = 0;
     double p = 0.5;
-    int n =4;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
+    int n = 2;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
     for (int i = 0; i < n; i++)
     {
         double frequency = pow(2, i);
         double amplitude = pow(p, i);
         total = total + InterpolatedNoise(x * frequency, y * frequency) * amplitude;
     }
-    return total;
+    if (total < 0.15 && total>-0.15) return 0;
+    return fabs(total);
 }
 
 double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦µÄPerlinNoiseÖµ
@@ -136,23 +137,29 @@ double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ
 
 double Perlin::PerlinNoiseS(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦µÄPerlinNoiseÖµ
 {
-    double c = 4, a = 2; // torus parameters (controlling size)
+    double c = 4, a = 2.5; // torus parameters (controlling size)
     double xt = c + a * cos(2 * PI * x);// +0.5;
     double yt = c + a * sin(2 * PI * x);// +1;// +101.5;
-    double zt = a * 2 * PI * y;// +101.5;
-
-
+    double zt = c + a * 2 * PI * y;// +101.5;
 
 
     double total = 0;
     double p = 0.5;
-    int n = 4;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
+    int n = 2;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
     for (int i = 0; i < n; i++)
     {
         double frequency = pow(2, i);
         double amplitude = pow(p, i);
         total = total + InterpolatedNoise(xt * frequency, yt * frequency, zt * frequency) * amplitude;
     }
+    total += 1;
+    total /= 2;
+    if (total < 0.2) return 0;
+    if (total > 0.7) return 1;
+    total -= 0.2;
+    total /= 0.5;
+ //   return min(fabs(total), 1.0);
+ //   cout << total << endl;
     return total;
 }
 
@@ -324,10 +331,10 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int edgeOptimi
                 d = (PerlinNoiseT(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
             }
             else if (edgeOptimization == 1) {
-                d = (PerlinNoiseS(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
+                d = (PerlinNoiseS(1.0 * (nowj) / columns, nowi * 1.0 / row));// +1.0) / 2.0;
             }
             else {
-                d = (PerlinNoise(0.05 * (nowj), nowi * 0.05) + 1.0) / 2.0;
+                d = PerlinNoise(0.15 * (nowj), nowi * 0.15);
             }
             /*
 
