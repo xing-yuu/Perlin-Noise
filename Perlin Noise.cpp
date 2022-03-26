@@ -7,7 +7,7 @@
 #include"ValueNoise.h"
 #include"SimplexNoise.h"
 using namespace std;
-void Readin(int& rowl, int& col, int& type, bool& edgeOptimization) {
+void Readin(int& rowl, int& col, int& type, int& edgeOptimization) {
 	std::ifstream in("./config");
 	if (!in.is_open())
 	{
@@ -29,7 +29,7 @@ int main() {
 	*/
 	//	perlinNoise->getPerlinNoise(360, 360, 0, false);
 	int rowl, col, type;
-	bool edgeOptimization;
+	int edgeOptimization;
 	vector<vector<int>>* grayScale;
 	Readin(rowl, col, type, edgeOptimization);
 	if (type == 0) {
@@ -58,7 +58,7 @@ int main() {
 	else {
 		resultPath = "./Result/New";
 	}
-	NoiseVisualization* noiseVisualization = new NoiseVisualization(grayScale,"./Result/");
+	NoiseVisualization* noiseVisualization = new NoiseVisualization(grayScale, resultPath);
 
 	return 0;
 }

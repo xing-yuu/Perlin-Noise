@@ -140,6 +140,66 @@ public:
         double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);// +1;// +101.5;
         double zt = a * sin(2 * PI * y);// +101.5;
 
+//        cout << "(" << xt << "," << yt << "," << zt << ")" << endl;
+        int xi = std::floor(xt);
+        int yi = std::floor(yt);
+        int zi = std::floor(zt);
+
+
+        float tx = xt - xi;
+        float ty = yt - yi;
+        float tz = zt - zi;
+
+
+        int rx0 = xi;// &kMaxTableSizeMask;
+        int rx1 = (rx0 + 1);// &kMaxTableSizeMask;
+        int ry0 = yi;// &kMaxTableSizeMask;
+        int ry1 = (ry0 + 1);// &kMaxTableSizeMask;
+        int rz0 = zi;// &kMaxTableSizeMask;
+        int rz1 = (rz0 + 1);// &kMaxTableSizeMask;
+
+
+
+
+
+        //   cout << nowseed << endl;
+
+        float c000 = lolrand(rx0, ry0, rz0, nowseed);
+        float c001 = lolrand(rx0, ry0, rz1, nowseed);
+        float c010 = lolrand(rx0, ry1, rz0, nowseed);
+        float c011 = lolrand(rx0, ry1, rz1, nowseed);
+        float c100 = lolrand(rx1, ry0, rz0, nowseed);
+        float c101 = lolrand(rx1, ry0, rz1, nowseed);
+        float c110 = lolrand(rx1, ry1, rz0, nowseed);
+        float c111 = lolrand(rx1, ry1, rz1, nowseed);
+
+        float sx = smoothstepp(tx);
+        float sy = smoothstepp(ty);
+        float sz = smoothstepp(tz);
+        //
+
+
+
+
+        float nx00 = lerpp(c000, c001, sz);
+        float nx01 = lerpp(c010, c011, sz);
+        float nx10 = lerpp(c100, c101, sz);
+        float nx11 = lerpp(c110, c111, sz);
+
+        float nx0 = lerpp(nx00, nx01, sy);
+        float nx1 = lerpp(nx10, nx11, sy);
+
+        return lerpp(nx0, nx1, sx);
+    }
+
+    float evalS(float x, float y)
+    {
+        //       cout << "(" << x << "," << y << ")" << endl;
+        double c = 1, a = 0.5; // torus parameters (controlling size)
+        double xt = c + a * cos(2 * PI * x);// +0.5;
+        double yt = c + a * sin(2 * PI * x);// +1;// +101.5;
+        //ÖÜ³¤ÊÇ2PI
+        double zt = c + a * 2 * PI * y; // +101.5;
 
 //        cout << "(" << xt << "," << yt << "," << zt << ")" << endl;
         int xi = std::floor(xt);
@@ -194,7 +254,6 @@ public:
     }
 
 
-
     static const unsigned kMaxTableSize = 512;
     static const unsigned kMaxTableSizeMask = kMaxTableSize - 1;
     float r[kMaxTableSize];
@@ -221,14 +280,17 @@ public:
     }
 
 
-    vector<vector<int>>* getNoise(int row, int columns, bool edgeOptimization) {
+    vector<vector<int>>* getNoise(int row, int columns, int edgeOptimization) {
         for (int i = 0; i < row; i++) {
             vector<int> everyRowPixel;
             for (int j = 0; j < columns; j++) {
                 int nowi = i, nowj = j;
                 float d, g;
-                if (edgeOptimization) {
+                if (edgeOptimization == 2) {
                     g = eval(nowj * 1.0 / columns, nowi * 1.0 / row) * 10;
+                }
+                else if (edgeOptimization == 1) {
+                    g = evalS(nowj * 1.0 / columns, nowi * 1.0 / row) * 10;
                 }
                 else {
                     g = eval(Vec20f(0.01 * (nowj), nowi * 0.01)) * 10;

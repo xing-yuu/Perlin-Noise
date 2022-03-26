@@ -34,7 +34,7 @@ public:
     float fractal(size_t octaves, float x) const;
     float fractal(size_t octaves, float x, float y) const;
     float fractal(size_t octaves, float x, float y, float z) const;
-    float TileablePerlin(float x, float y) {
+    float TileableSimplex(float x, float y) {
         double c = 2, a = 1; // torus parameters (controlling size)
         double xt = (c + a * cos(2 * PI * y)) * cos(2 * PI * x);
         double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);
@@ -42,6 +42,19 @@ public:
         double val = noise(xt, yt, zt);
         return val;
     }
+    float TileableSimplexS(float x, float y) {
+        double c = 2, a = 1; // torus parameters (controlling size)
+        double xt = c + a * cos(2 * PI * x);// +0.5;
+        double yt = c + a * sin(2 * PI * x);// +1;// +101.5;
+        double zt = a * 2 * PI * y;// +101.5;
+        double val = noise(xt, yt, zt);
+        return val;
+    }
+    float Simplex(float x, float y) {
+        double val = noise(x, y);
+        return val;
+    }
+
     /**
      * Constructor of to initialize a fractal noise summation
      *
@@ -59,7 +72,7 @@ public:
         mLacunarity(lacunarity),
         mPersistence(persistence) {
     }
-    std::vector< std::vector<int>>* getNoise(int row, int columns, bool edgeOptimization);
+    std::vector< std::vector<int>>* getNoise(int row, int columns, int edgeOptimization);
 private:
     // Parameters of Fractional Brownian Motion (fBm) : sum of N "octaves" of noise
     float mFrequency;   ///< Frequency ("width") of the first octave of noise (default to 1.0)

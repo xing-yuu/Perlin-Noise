@@ -30,6 +30,7 @@ public:
     double InterpolatedNoise(float x, float y);
     double PerlinNoise(float x, float y);
     double PerlinNoiseT(float x, float y);
+    double PerlinNoiseS(float x, float y);
     float TileablePerlin(float x, float y);
 
 
@@ -38,7 +39,7 @@ public:
 
     float getLength(point2D vStart, point2D vEnd);
     void smoothEdge(vector<vector<int>>* oriNoise, int iteration);
-    vector<vector<int>>* getPerlinNoise(int row, int columns, bool edgeOptimization = true);
+    vector<vector<int>>* getPerlinNoise(int row, int columns, int edgeOptimization = 1);
 
 
 

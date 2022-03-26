@@ -118,6 +118,9 @@ double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ
     double yt = (c + a * cos(2 * PI * y)) * sin(2 * PI * x);// +1;// +101.5;
     double zt = a * sin(2 * PI * y);// +101.5;
 
+
+
+
     double total = 0;
     double p = 0.5;
     int n = 4;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
@@ -129,6 +132,31 @@ double Perlin::PerlinNoiseT(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ
     }
     return total;
 }
+
+
+double Perlin::PerlinNoiseS(float x, float y)    // ×îÖÕµ÷ÓÃ£º¸ù¾Ý(x,y)»ñµÃÆä¶ÔÓ¦µÄPerlinNoiseÖµ
+{
+    double c = 4, a = 2; // torus parameters (controlling size)
+    double xt = c + a * cos(2 * PI * x);// +0.5;
+    double yt = c + a * sin(2 * PI * x);// +1;// +101.5;
+    double zt = a * 2 * PI * y;// +101.5;
+
+
+
+
+    double total = 0;
+    double p = 0.5;
+    int n = 4;//¾ö¶¨µþ¼ÓµÄÆµÂÊºÍ·ù¶È
+    for (int i = 0; i < n; i++)
+    {
+        double frequency = pow(2, i);
+        double amplitude = pow(p, i);
+        total = total + InterpolatedNoise(xt * frequency, yt * frequency, zt * frequency) * amplitude;
+    }
+    return total;
+}
+
+
 
 float Perlin::getLength(point2D vStart, point2D vEnd)
 {
@@ -282,7 +310,7 @@ void Perlin::smoothEdge(vector<vector<int>>* oriNoise,int iteration) {
         }
     }
 }
-vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, bool edgeOptimization) {
+vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, int edgeOptimization) {
 
 
 
@@ -292,8 +320,11 @@ vector<vector<int>>* Perlin::getPerlinNoise(int row, int columns, bool edgeOptim
             int nowi = i, nowj = j;
             float d, g;
 
-            if (edgeOptimization) {
+            if (edgeOptimization==2) {
                 d = (PerlinNoiseT(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
+            }
+            else if (edgeOptimization == 1) {
+                d = (PerlinNoiseS(1.0 * (nowj) / columns, nowi * 1.0 / row) + 1.0) / 2.0;
             }
             else {
                 d = (PerlinNoise(0.05 * (nowj), nowi * 0.05) + 1.0) / 2.0;
