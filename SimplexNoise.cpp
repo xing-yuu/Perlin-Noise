@@ -497,6 +497,7 @@ std::vector< std::vector<int>>* SimplexNoise::getNoise(int row, int columns, int
             float d, g;
             if (edgeOptimization == 1) {
                 d = TileableSimplexS(nowj * 1.0 / columns, nowi * 1.0 / row);
+               
             }
             else if (edgeOptimization == 2) {
                 d = TileableSimplex(nowj * 1.0 / columns, nowi * 1.0 / row);
@@ -504,7 +505,10 @@ std::vector< std::vector<int>>* SimplexNoise::getNoise(int row, int columns, int
             else {
                 d = Simplex(nowj * 0.15, nowi * 0.15);
             }
-            everyRowPixel.push_back(int(d * 255));
+          //  if (d < 0)d = 0;
+            char di = d * 255;
+            d = di;
+            everyRowPixel.push_back(int(di));
         }
         result->push_back(everyRowPixel);
     }

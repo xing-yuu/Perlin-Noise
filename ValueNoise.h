@@ -80,16 +80,16 @@ public:
         r1 = x * 0x1B873593;
         r2 = y * 0x19088711;
         r3 = z * 0xB2D05E13;
-        r4 = z * 0x63D02313;
+        r4 = z * 0xA4025E13;
 
         r = seed + r1 + r2 + r3 + r4;
         r ^= r >> 5;
         r *= 0xCC9E2D51;
         r %= 10000;
         float rf = r * 1.0 / 10000;
-        //   cout << rf << endl;
-        return rf;
+        return fabs(rf);
     }
+
     float lerpp(float lo, float hi, float t)
     {
         return lo * (1 - t) + hi * t;
@@ -252,7 +252,83 @@ public:
 
         return lerpp(nx0, nx1, sx);
     }
+    float evalD(float x, float y)
+    {
+        //       cout << "(" << x << "," << y << ")" << endl;
+        double c = 1.3, a = 1.2; // torus parameters (controlling size)
+        double xt = c + a * cos(2 * PI * x);// +0.5;
+        double yt = c + a * sin(2 * PI * x);// +1;// +101.5;
+        //ÖÜ³¤ÊÇ2PI
+        double zt = c + a * cos(2 * PI * y); // +101.5;
+        double wt = c + a * sin(2 * PI * y);
+//        cout << "(" << xt << "," << yt << "," << zt << ")" << endl;
+        int xi = std::floor(xt);
+        int yi = std::floor(yt);
+        int zi = std::floor(zt);
+        int wi = std::floor(wt);
 
+        float tx = xt - xi;
+        float ty = yt - yi;
+        float tz = zt - zi;
+        float tw = wt - wi;
+
+        int rx0 = xi;// &kMaxTableSizeMask;
+        int rx1 = (rx0 + 1);// &kMaxTableSizeMask;
+        int ry0 = yi;// &kMaxTableSizeMask;
+        int ry1 = (ry0 + 1);// &kMaxTableSizeMask;
+        int rz0 = zi;// &kMaxTableSizeMask;
+        int rz1 = (rz0 + 1);// &kMaxTableSizeMask;
+        int rw0 = wi;// &kMaxTableSizeMask;
+        int rw1 = (rw0 + 1);// &kMaxTableSizeMask;
+
+
+
+
+        //   cout << nowseed << endl;
+
+        float c0000 = lolrand(rw0, rx0, ry0, rz0, nowseed);
+        float c0001 = lolrand(rw0, rx0, ry0, rz1, nowseed);
+        float c0010 = lolrand(rw0, rx0, ry1, rz0, nowseed);
+        float c0011 = lolrand(rw0, rx0, ry1, rz1, nowseed);
+        float c0100 = lolrand(rw0, rx1, ry0, rz0, nowseed);
+        float c0101 = lolrand(rw0, rx1, ry0, rz1, nowseed);
+        float c0110 = lolrand(rw0, rx1, ry1, rz0, nowseed);
+        float c0111 = lolrand(rw0, rx1, ry1, rz1, nowseed);
+        float c1000 = lolrand(rw1, rx0, ry0, rz0, nowseed);
+        float c1001 = lolrand(rw1, rx0, ry0, rz1, nowseed);
+        float c1010 = lolrand(rw1, rx0, ry1, rz0, nowseed);
+        float c1011 = lolrand(rw1, rx0, ry1, rz1, nowseed);
+        float c1100 = lolrand(rw1, rx1, ry0, rz0, nowseed);
+        float c1101 = lolrand(rw1, rx1, ry0, rz1, nowseed);
+        float c1110 = lolrand(rw1, rx1, ry1, rz0, nowseed);
+        float c1111 = lolrand(rw1, rx1, ry1, rz1, nowseed);
+
+
+        float sx = smoothstepp(tx);
+        float sy = smoothstepp(ty);
+        float sz = smoothstepp(tz);
+        float sw = smoothstepp(tw);
+        //
+
+
+        float nz000 = lerpp(c0000, c0001, sz);
+        float nz001 = lerpp(c0010, c0011, sz);
+        float nz010 = lerpp(c0100, c0101, sz);
+        float nz011 = lerpp(c0110, c0111, sz);
+        float nz100 = lerpp(c1000, c1001, sz);
+        float nz101 = lerpp(c1010, c1011, sz);
+        float nz110 = lerpp(c1100, c1101, sz);
+        float nz111 = lerpp(c1110, c1111, sz);
+
+        float ny00 = lerpp(nz000, nz001, sy);
+        float ny01 = lerpp(nz010, nz011, sy);
+        float ny10 = lerpp(nz100, nz101, sy);
+        float ny11 = lerpp(nz110, nz111, sy);
+
+        float nx0 = lerpp(ny00, ny01, sx);
+        float nx1 = lerpp(ny10, ny11, sx);
+        return lerpp(nx0, nx1, sw);
+    }
 
     static const unsigned kMaxTableSize = 512;
     static const unsigned kMaxTableSizeMask = kMaxTableSize - 1;
@@ -287,7 +363,7 @@ public:
                 int nowi = i, nowj = j;
                 float d, g;
                 if (edgeOptimization == 2) {
-                    g = eval(nowj * 1.0 / columns, nowi * 1.0 / row) * 10;
+                    g = evalD(nowj * 1.0 / columns, nowi * 1.0 / row) * 10;
                 }
                 else if (edgeOptimization == 1) {
                     g = evalS(nowj * 1.0 / columns, nowi * 1.0 / row) * 10;
