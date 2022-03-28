@@ -49,6 +49,8 @@ OpenCV 3.0.0
 ![SimpleX noise](./IMG/332.png)
 
 ## Reference
+#### Review:
+* https://blog.csdn.net/candycat1992/article/details/50346469
 #### Value Noise:
 * https://blog.csdn.net/yolon3000/article/details/78473705
 * https://blog.csdn.net/yolon3000/article/details/78483618
