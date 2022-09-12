@@ -195,7 +195,7 @@ public:
     float evalS(float x, float y)
     {
         //       cout << "(" << x << "," << y << ")" << endl;
-        double c = 1, a = 0.5; // torus parameters (controlling size)
+        double c = 1, a = 2; // torus parameters (controlling size)
         double xt = c + a * cos(2 * PI * x);// +0.5;
         double yt = c + a * sin(2 * PI * x);// +1;// +101.5;
         //ÖÜ³¤ÊÇ2PI
